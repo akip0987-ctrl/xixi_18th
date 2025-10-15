@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>For xixi — 18th Birthday (Final)</title>
+  <style>
+    :root{
+      --bg-a:#fff6fb; --bg-b:#f8f0ff;
+      --accent:#ff7aa2; --muted:#7b8790;
+      --card:#ffffffdd; --glass: rgba(255,255,255,0.6);
+    }
+    html,body{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial; -webkit-font-smoothing:antialiased; background:linear-gradient(160deg,var(--bg-a),var(--bg-b)); color:#111; overflow:hidden}
+    /* center stage */
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
+    .stage{width:100%;max-width:980px;border-radius:20px;padding:22px;position:relative;overflow:hidden;backdrop-filter: blur(4px);}
+    /* glowing title center top */
+    .titleWrap{position:absolute;left:50%;transform:translateX(-50%);top:18px;text-align:center;pointer-events:none}
+    .title{font-size:20px;font-weight:800;letter-spacing:0.2px;color:#282828;opacity:0;transform:translateY(-6px);filter:drop-shadow(0 6px 20px rgba(255,122,162,0.12))}
+    .title.show{opacity:1;transform:translateY(0);transition:all 860ms cubic-bezier(.2,.9,.3,1)}
+    .subtitle{font-size:13px;color:var(--muted);margin-top:6px;opacity:0;transform:translateY(-6px)}
+    .subtitle.show{opacity:1;transform:translateY(0);transition:all 860ms 120ms cubic-bezier(.2,.9,.3,1)}
+
+    /* layout */
+    .content{display:grid;grid-template-columns:420px 1fr;gap:28px;align-items:center;margin-top:36px}
+    @media(max-width:860px){.content{grid-template-columns:1fr;gap:18px;padding:8px} .titleWrap{top:12px}}
+
+    /* gift column */
+    .left{display:flex;flex-direction:column;align-items:center;gap:12px}
+    .stageBg{width:420px;height:420px;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.85));box-shadow:0 14px 40px rgba(15,22,40,0.06);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+    .glowRing{position:absolute;inset:-20%;background:radial-gradient(circle at 50% 40%, rgba(255,122,162,0.08), rgba(255,122,162,0.00));filter:blur(18px);pointer-events:none}
+    .giftWrap{width:240px;height:240px;border-radius:18px;background:linear-gradient(180deg,#fff0f6,#ffe9f2);display:flex;align-items:center;justify-content:center;position:relative;z-index:6;box-shadow:0 10px 28px rgba(255,122,162,0.08);transform-origin:center}
+    .ribbon{position:absolute;left:50%;top:12px;transform:translateX(-50%);width:260px;height:36px;background:linear-gradient(90deg,#ff9abf,#ff6fa3);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;letter-spacing:0.4px;z-index:5}
+    .bow{position:absolute;top:34px;left:50%;transform:translateX(-50%);width:80px;height:80px;border-radius:16px;background:radial-gradient(circle at 40% 30%,#fff7ff,#ffd1e7);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 28px rgba(255,122,162,0.10);font-size:28px;z-index:7}
+    .openBtn{margin-top:12px;border:0;padding:14px 18px;border-radius:16px;background:linear-gradient(90deg,#ff9fbf,#ffd1e0);color:#071022;font-weight:800;box-shadow:0 12px 34px rgba(255,122,162,0.10);font-size:16px;cursor:pointer;z-index:8}
+
+    /* gift idle pixel sparkle */
+    .pixelSpark{position:absolute;left:20%;top:14%;width:8px;height:8px;background:rgba(255,255,255,0.9);border-radius:2px;filter:blur(0.3px);opacity:0.85;transform:rotate(12deg);box-shadow:0 0 18px rgba(255,200,230,0.8)}
+
+    /* right column (letter) */
+    .right{min-height:320px;display:flex;align-items:center;justify-content:center}
+    .letterCard{width:100%;max-width:520px;background:linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.98));border-radius:16px;padding:20px;box-shadow:0 14px 40px rgba(15,22,40,0.06);opacity:0;transform:translateY(8px) scale(0.995);transition:all 880ms cubic-bezier(.2,.9,.3,1)}
+    .letterCard.show{opacity:1;transform:translateY(0) scale(1)}
+    .letter pre{white-space:pre-wrap;margin:0;font-size:16px;line-height:1.6;color:#222;font-family:inherit}
+    .endNote{margin-top:16px;text-align:center;color:var(--muted);font-size:14px;opacity:0;transform:translateY(6px);transition:all 700ms 200ms ease-in-out}
+
+    /* typewriter caret effect */
+    .type{display:inline-block;white-space:pre-wrap}
+    .caret{display:inline-block;width:8px;background:linear-gradient(180deg,#ff7aa2,#ff4d7a);margin-left:6px;height:14px;vertical-align:middle;border-radius:3px;opacity:0;animation:blink 1s steps(2,end) infinite}
+    @keyframes blink{0%,50%{opacity:1}51%,100%{opacity:0}}
+
+    /* particles container */
+    .particles{position:absolute;inset:0;pointer-events:none;z-index:3;overflow:hidden}
+    .particle{position:absolute;opacity:0;transform:translateY(0) scale(0.9);transition:all 1500ms cubic-bezier(.2,.9,.3,1);font-size:18px}
+
+    /* ending overlay */
+    .overlayEnd{position:absolute;inset:0;background:radial-gradient(circle at 50% 30%, rgba(255,255,255,0.04), rgba(255,255,255,0));pointer-events:none;opacity:0;transition:opacity 1200ms}
+    .overlayEnd.show{opacity:1}
+
+    @media (max-width:860px){ .stageBg{width:100%;height:420px;border-radius:14px} .giftWrap{width:200px;height:200px} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="stage" role="application" aria-labelledby="title">
+      <div class="titleWrap">
+        <div id="title" class="title">for xixi — 18th birthday 💖</div>
+        <div id="subtitle" class="subtitle">a small surprise — open the gift</div>
+      </div>
+
+      <div class="content">
+        <div class="left">
+          <div class="stageBg" id="stageBg" aria-hidden="false">
+            <div class="glowRing"></div>
+            <div class="ribbon">16 October 2025 — 18</div>
+            <div class="giftWrap" id="giftWrap" role="button" tabindex="0" aria-label="open gift">
+              <div class="pixelSpark" id="pixelSpark"></div>
+              <div class="bow" id="bow">🎀</div>
+            </div>
+            <div class="particles" id="particles"></div>
+            <div class="overlayEnd" id="overlayEnd"></div>
+          </div>
+          <button id="openBtn" class="openBtn" aria-expanded="false">Open Gift 🎁</button>
+        </div>
+
+        <div class="right">
+          <div class="letterCard" id="letterCard" aria-hidden="true">
+            <pre id="letterText"></pre>
+            <div class="endNote" id="endNote">from me, with love 🤍</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// Final premium UI script
+(() => {
+  const title = document.getElementById('title');
+  const subtitle = document.getElementById('subtitle');
+  const giftWrap = document.getElementById('giftWrap');
+  const openBtn = document.getElementById('openBtn');
+  const particles = document.getElementById('particles');
+  const letterCard = document.getElementById('letterCard');
+  const letterText = document.getElementById('letterText');
+  const endNote = document.getElementById('endNote');
+  const overlayEnd = document.getElementById('overlayEnd');
+  const pixelSpark = document.getElementById('pixelSpark');
+
+  // title show
+  requestAnimationFrame(()=>{ title.classList.add('show'); subtitle.classList.add('show'); });
+
+  // love letter content (exact text provided)
+  const lines = [
+`hey xixi 💖`,
+``,
+`happy 18th birthday baby 🥰🎂🎉`,
+`finally ur big day is here 🫶 i’m so proud of u, seriously 😭💗 seeing how u’ve grown, how strong u are, and how sweet u stay no matter what — it makes me love u even more 😚💞`,
+``,
+`and yeah… i’m sorry for saying it too early yesterday 😅💦 i just couldn’t help it 😭 i got too excited ‘cause i wanted to be the first one to say happy birthday 😭💐 u know how much i love celebrating u 💕`,
+``,
+`i just want u to know how special u are to me 🌷 every time i talk to u or think about u, my whole mood just gets better 🥺💫 u make everything around me feel warmer, softer, and honestly… u just make my world a better place 🌎💘`,
+``,
+`i hope today’s full of smiles, laughter, and everything that makes u happy 🎀🌈✨ u deserve the sweetest things in life, always 🍰🕯️ and i’ll keep wishing the best for u every single day 💭💖`,
+``,
+`love u so so much 💋💞`,
+`— me 💌🤍`
+  ];
+
+  // helper: typewriter reveal
+  function revealLetter() {
+    letterCard.classList.add('show');
+    letterCard.setAttribute('aria-hidden','false');
+    // reveal text line by line with typewriter-like effect per line
+    let li = 0;
+    letterText.textContent = '';
+    const caret = document.createElement('span'); caret.className='caret'; letterText.appendChild(caret);
+    function showLine() {
+      if (li >= lines.length) {
+        caret.remove();
+        // reveal end note after slight delay
+        setTimeout(()=>{ endNote.style.opacity=1; endNote.style.transform='translateY(0)'; overlayEnd.classList.add('show'); }, 800);
+        return;
+      }
+      const line = lines[li];
+      let i = 0;
+      const span = document.createElement('span'); span.className='type'; letterText.appendChild(span);
+      function typeChar() {
+        if (i <= line.length) {
+          span.textContent = line.slice(0,i);
+          i++;
+          const delay = 14 + Math.random()*18; // faster typing but with slight variance
+          setTimeout(typeChar, delay);
+        } else {
+          letterText.appendChild(document.createElement('br'));
+          li++;
+          setTimeout(showLine, 180 + Math.random()*160);
+        }
+      }
+      typeChar();
+    }
+    showLine();
+  }
+
+  // particle spawn (hearts + soft confetti)
+  function spawnParticlesBurst(count=28) {
+    const W = Math.max(window.innerWidth, 480);
+    const H = Math.max(window.innerHeight, 480);
+    for (let i=0;i<count;i++) {
+      const el = document.createElement('div');
+      el.className = 'particle';
+      // mix hearts and tiny sparkles
+      const isHeart = Math.random() < 0.44;
+      el.textContent = isHeart ? '💖' : '✨';
+      el.style.left = (30 + Math.random()*(W-60)) + 'px';
+      el.style.top = (30 + Math.random()*120) + 'px';
+      el.style.fontSize = (12 + Math.random()*26) + 'px';
+      particles.appendChild(el);
+      // animate descent / float
+      requestAnimationFrame(()=>{
+        el.style.opacity = 0.98;
+        el.style.transform = `translateY(${140 + Math.random()*420}px) scale(${1 + Math.random()*0.06})`;
+      });
+      setTimeout(()=> el.style.opacity = 0, 1600 + Math.random()*900);
+      setTimeout(()=> el.remove(), 2600 + Math.random()*1300);
+    }
+  }
+
+  // subtle breathing animation for gift
+  let breathe = true;
+  function giftIdlePulse() {
+    if (!breathe) return;
+    const s = 1 + (Math.sin(Date.now()/900)/120); // tiny scale sway
+    giftWrap.style.transform = `scale(${s})`;
+    // small sparkle movement
+    pixelSpark.style.left = (18 + Math.sin(Date.now()/700)*3) + '%';
+    requestAnimationFrame(giftIdlePulse);
+  }
+  requestAnimationFrame(giftIdlePulse);
+
+  // soft piano lullaby using WebAudio with gentle reverb
+  let audioCtx = null;
+  function playLullaby() {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const ctx = audioCtx;
+      const now = ctx.currentTime;
+
+      // basic reverb (feedback delay + lowpass)
+      const delay = ctx.createDelay(5.0); delay.delayTime.value = 0.28;
+      const fb = ctx.createGain(); fb.gain.value = 0.22;
+      const lp = ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value = 2400;
+      delay.connect(fb); fb.connect(delay);
+
+      const master = ctx.createGain(); master.gain.value = 0.06;
+      lp.connect(delay); delay.connect(master); master.connect(ctx.destination);
+      lp.connect(master);
+
+      // gentle piano-like note generator (two detuned sines + triangle for warmth)
+      function note(freq, start, dur, pan) {
+        const o1 = ctx.createOscillator(); o1.type='sine'; o1.frequency.value = freq;
+        const o2 = ctx.createOscillator(); o2.type='sine'; o2.frequency.value = freq*1.997; o2.detune.value = -0.2;
+        const o3 = ctx.createOscillator(); o3.type='triangle'; o3.frequency.value = freq*2.001;
+        const g = ctx.createGain();
+        const p = ctx.createStereoPanner(); p.pan.value = pan||0;
+
+        // amplitude envelope
+        g.gain.setValueAtTime(0.0001, now + start);
+        g.gain.exponentialRampToValueAtTime(0.14, now + start + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, now + start + dur);
+
+        o1.connect(g); o2.connect(g); o3.connect(g);
+        g.connect(p); p.connect(lp);
+
+        o1.start(now + start); o1.stop(now + start + dur + 0.03);
+        o2.start(now + start); o2.stop(now + start + dur + 0.03);
+        o3.start(now + start); o3.stop(now + start + dur + 0.03);
+      }
+
+      // arranged slow / lullaby "Happy Birthday" melody (soft)
+      const notes = [
+        [392,0,0.6,-0.2],[440,0.6,0.6,0.2],[392,1.2,1.0,-0.1],[523.25,2.4,1.0,0.2],[493.88,3.6,1.6,0],
+        [392,5.4,0.6,0.1],[440,6.0,0.6,-0.1],[392,6.6,1.0,0.2],[587.33,7.8,1.0,-0.2],[523.25,8.8,1.4,0.1],
+        [392,10.6,0.6,-0.2],[392,11.2,0.6,0.2],[659.25,11.8,1.0,-0.1],[523.25,13.0,1.0,0.1],[493.88,14.0,1.0,-0.2],[440,15.0,1.0,0.1],
+        [698.46,16.4,1.0,0.2],[698.46,17.4,0.6,-0.2],[659.25,18.0,1.0,0.2],[523.25,19.2,1.0,-0.1],[587.33,20.2,1.0,0.1],[523.25,21.2,1.8,0]
+      ];
+      notes.forEach(n=>note(n[0], n[1], n[2], n[3]));
+
+      // after song ends, show ending note and subtle overlay/bokeh
+      const totalDuration = 21.2 + 0.8;
+      setTimeout(()=>{
+        endNote.style.opacity = 1;
+        endNote.style.transform = 'translateY(0)';
+        overlayEnd.classList.add('show');
+      }, (totalDuration * 1000) - 120);
+    } catch (e) { console.warn('audio error', e); }
+  }
+
+  // sequence when opening
+  function openSequence() {
+    // little expand and pop
+    giftWrap.animate([{transform:'scale(1)'},{transform:'scale(1.06)'},{transform:'scale(1)'}],{duration:520, easing:'cubic-bezier(.2,.9,.3,1)'});
+    // ribbon flare
+    const bow = document.getElementById('bow');
+    bow.animate([{transform:'translateX(-50%) rotate(0deg) scale(1)'},{transform:'translateX(-50%) rotate(-14deg) scale(1.08)'},{transform:'translateX(-50%) rotate(0deg) scale(1)'}],{duration:720, easing:'cubic-bezier(.2,.9,.3,1)'});
+
+    // sparkle + particle burst
+    spawnParticlesQuick();
+    // reveal letter after a short cinematic delay
+    setTimeout(()=>{ revealLetter(); }, 680);
+  }
+
+  function spawnParticlesQuick() {
+    spawnParticlesBurst(36);
+  }
+
+  // combined: spawn hearts/confetti with gentle timing
+  function spawnParticlesBurst(n) {
+    spawnParticlesBurstHelper(n);
+  }
+  function spawnParticlesBurstHelper(count) {
+    // reuse earlier implementation inlined to avoid excessive closures
+    const W = Math.max(window.innerWidth, 480);
+    for (let i=0;i<count;i++) {
+      const el = document.createElement('div');
+      el.className = 'particle';
+      const isHeart = Math.random() < 0.5;
+      el.textContent = isHeart ? '💖' : '✨';
+      el.style.left = (30 + Math.random()*(W-60)) + 'px';
+      el.style.top = (30 + Math.random()*120) + 'px';
+      el.style.fontSize = (12 + Math.random()*30) + 'px';
+      el.style.opacity = 0;
+      particles.appendChild(el);
+      requestAnimationFrame(()=>{
+        el.style.opacity = 0.98;
+        el.style.transform = `translateY(${140 + Math.random()*420}px) scale(${1 + Math.random()*0.08})`;
+      });
+      setTimeout(()=> el.style.opacity = 0, 1700 + Math.random()*900);
+      setTimeout(()=> el.remove(), 3000 + Math.random()*1200);
+    }
+  }
+
+  // attach handlers (gesture required to play audio on iOS)
+  let opened = false;
+  function handleOpen(e) {
+    if (!opened) {
+      opened = true;
+      // resume/create audio on gesture
+      try { if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); } catch(e) {}
+      playLullaby();
+      openSequence();
+      spawnParticlesBurstHelper(18);
+      // change button label
+      openBtn.textContent = 'Play again 🎵';
+      openBtn.setAttribute('aria-expanded','true');
+    } else {
+      // replay gentle sequence
+      playLullaby();
+      spawnParticlesQuick();
+      giftWrap.animate([{transform:'translateY(0)'},{transform:'translateY(-6px)'},{transform:'translateY(0)'}],{duration:420});
+    }
+  }
+  openBtn.addEventListener('click', handleOpen, {passive:true});
+  giftWrap.addEventListener('click', handleOpen, {passive:true});
+  giftWrap.addEventListener('keydown', (ev)=>{ if (ev.key==='Enter' || ev.key===' ') { ev.preventDefault(); handleOpen(ev); } });
+
+  // start small sparkle motion
+  function idleSparkMotion() {
+    pixelSpark.style.opacity = 0.92;
+    let t = 0;
+    function step() {
+      t += 0.02;
+      const x = 18 + Math.sin(t*1.2) * 3;
+      pixelSpark.style.left = x + '%';
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  idleSparkMotion();
+
+})(); // IIFE end
+</script>
+</body>
+</html>
